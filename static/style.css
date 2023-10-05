@@ -1,0 +1,27 @@
+* {
+    margin: 0px;
+}
+
+html, body, .content {
+    min-height: 100vh;
+    text-align: center;
+}
+
+.content {
+    width: 90%;
+    margin: auto;
+}
+
+.content * {
+    width: 100%;
+}
+
+#chatarea {
+    margin-top: 15px;
+    height: 90vh;
+    resize: none;
+}
+
+#sendtext {
+    width: calc(100% - 2px);
+}
