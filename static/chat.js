@@ -2,6 +2,7 @@ if (!("WebSocket" in window)) { while (true) { alert("WebSockets aren't supporte
 
 var chatarea = document.getElementById("chatarea");
 var sendtext = document.getElementById("sendtext");
+var channel = document.getElementById("channel");
 var socket = new WebSocket("ws://127.0.0.1:4200/socket");
 
 sendtext.addEventListener("keydown", (event) => {
@@ -17,7 +18,8 @@ function sendMessage(message) {
     var send = {
         "type": "send",
         "data": {
-            "message": message
+            "message": message,
+            "channel": channel.value
         }
     };
     socket.send(JSON.stringify(send));
@@ -25,8 +27,10 @@ function sendMessage(message) {
 
 socket.onmessage = (recv) => {
     var message = JSON.parse(recv.data);
-    if (message["type"] == "new_message") {
-        chatarea.value = `${chatarea.value}${message["data"]["username"]}: ${message["data"]["message"]}\n`;
+    if (message["data"]["channel"] == channel.value) {
+        if (message["type"] == "new_message") {
+            chatarea.value = `${chatarea.value}${message["data"]["username"]}: ${message["data"]["message"]}\n`;
+        }
     }
 }
 

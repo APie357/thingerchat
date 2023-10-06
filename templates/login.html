@@ -3,7 +3,11 @@
 {% block content %}
     <form method="post">
         <input type="text" name="name" placeholder="Username:" required />
+        <br>
         <input type="password" name="pass" placeholder="Password:" required />
+        <br>
         <button type="submit">Login</button>
+        <br>
+        <p>{{ message }}</p>
     </form>
 {% endblock %}

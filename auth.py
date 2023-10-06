@@ -8,7 +8,7 @@ with open(".SECRET_KEY") as s:
 with open("users.json") as f:
     users = json.loads(f.read())
 
-def login(username: str, password: str) -> uuid.UUID:
+def login(username: str, password: str):
     if username in users:
         if bcrypt.checkpw(password.encode(), base64.b64decode(users[username]["password"])):
             return uuid.uuid4()

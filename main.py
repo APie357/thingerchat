@@ -17,12 +17,11 @@ server_sessions: dict[str, dict] = {}
 
 def send(message: dict):
     global clients
-    print(f"New message: {message}")
+    app.logger.info(f"[MESSAGE   ] {message['data']['channel']} {message['data']['username']}: {message['data']['message']}")
     history.append(message)
     new_clients = clients
     for client in clients:
         try:
-            print(f"Sending to client {client}")
             client.send(json.dumps(message))
         except ConnectionClosed:
             new_clients.remove(client)
@@ -41,16 +40,16 @@ def index():
 def login():
     if request.method == "POST":
         _uuid = auth.login(request.form["name"], request.form["pass"])
+        if _uuid is None:
+            return render_template("login.html", message="Invalid login information."), 403
         _uuid = str(_uuid)
-        if _uuid is not None:
-            server_sessions[_uuid] = {"username": request.form["name"]}
-            session["session_uuid"] = _uuid
-            return redirect(url_for("chat"))
-        return "Forbidden", 403
+        server_sessions[_uuid] = {"username": request.form["name"]}
+        session["session_uuid"] = _uuid
+        return redirect(url_for("chat"))
     if "session_uuid" in session:
         if session["session_uuid"] in server_sessions:
             return redirect(url_for("chat"))
-    return render_template("login.html")
+    return render_template("login.html", message="")
 
 
 @app.route("/logout")
@@ -73,7 +72,7 @@ def chat():
 
 @sock.route("/socket")
 def socket(client: Server):
-    print(f"New client: {server_sessions[session['session_uuid']]['username']}"
+    app.logger.info(f"[NEW CLIENT] {server_sessions[session['session_uuid']]['username']}: "
             + f"{request.remote_addr} {request.user_agent}")
     clients.append(client)
     while client.connected:
@@ -82,12 +81,13 @@ def socket(client: Server):
             try:
                 message = json.loads(recv)
                 if "type" in message and "data" in message:
-                    if message["type"] == "send" and "message" in message["data"]:
+                    if message["type"] == "send" and "message" in message["data"] and "channel" in message["data"]:
                         send({
                             "type": "new_message",
                             "data": {
                                 "message": message["data"]["message"],
-                                "username": server_sessions[session["session_uuid"]]["username"]
+                                "username": server_sessions[session["session_uuid"]]["username"],
+                                "channel": message["data"]["channel"]
                             }
                         })
             except Exception:

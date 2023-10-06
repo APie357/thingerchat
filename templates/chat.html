@@ -3,6 +3,7 @@
 {% block content %}
     <div class="content">
         <textarea id="chatarea" readonly></textarea>
+        <input id="channel" placeholder="Channel" type="text" value="general">
         <input id="sendtext" placeholder="Say something:" type="text">
     </div>
     <script src="{{ url_for('static', filename='chat.js') }}"></script>

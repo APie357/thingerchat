@@ -23,5 +23,13 @@ html, body, .content {
 }
 
 #sendtext {
-    width: calc(100% - 2px);
+    width: calc(80% - 4px);
+}
+
+#channel {
+    width: calc(20% - 16px);
+}
+
+form * {
+    margin: 4px;
 }
